@@ -1,0 +1,4 @@
+model,RMSE,R_squared,MAE
+Linear Regression,0.3165669,0.9206164,0.2531962
+Ridge Regression,0.2651185,0.9533518,0.2075398
+Elastic Net,0.6720480,0.9479792,0.5492325
