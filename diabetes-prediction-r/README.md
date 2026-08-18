@@ -1,71 +1,81 @@
 # Diabetes Classification in R
 
-A machine-learning model comparison project using the Pima Indians Diabetes dataset. The analysis focuses on data quality, missing-value treatment, class imbalance, repeated cross-validation, and comparison of multiple classification approaches in R.
+Machine-learning model comparison using the Pima Indians Diabetes dataset. The project covers data cleaning, missing-value treatment, class imbalance, repeated cross-validation, model comparison, and classification-error tradeoffs.
 
-![Project poster](output/poster_preview.png)
+## Objective
 
-## Project objective
+Predict diabetes status from eight clinical and demographic predictors and compare multiple classifiers using accuracy, Cohen's kappa, ROC AUC, and confusion-matrix behavior.
 
-Build and compare classification models that predict diabetes status from eight clinical and demographic predictors, then evaluate the tradeoffs between overall predictive performance and classification errors.
+## Workflow
 
-## What the analysis covers
+- Treat implausible zero values as missing for glucose, blood pressure, skin thickness, insulin, and BMI
+- Use predictive mean matching for remaining missing values
+- Create a stratified 80/20 train/test split
+- Use up-sampling within training to address class imbalance
+- Use repeated 10-fold cross-validation
+- Compare logistic regression, KNN, discriminant analysis, SVMs, a neural network, PLS, bagging, gradient boosting, and Random Forest
+- Evaluate held-out performance and consider false-negative tradeoffs in addition to aggregate metrics
 
-- Exploratory analysis of distributions, missing values, outliers, and class balance
-- Conversion of implausible zero measurements to missing values
-- Predictive mean matching for missing-data imputation
-- Stratified train/test splitting and up-sampling of the training data
-- Model-specific preprocessing including centering, scaling, Box-Cox, and spatial-sign transformations
-- Repeated 10-fold cross-validation
-- Comparison of linear, distance-based, SVM, neural-network, discriminant-analysis, bagging, boosting, and random-forest classifiers
-- Evaluation with accuracy, Cohen's kappa, ROC AUC, confusion matrices, and error tradeoffs
+## Submitted results
 
-## Results
-
-Random Forest produced the strongest overall performance in the final comparison.
+Random Forest produced the strongest overall performance in the final submitted comparison.
 
 | Model | Accuracy | Kappa | ROC AUC |
 |---|---:|---:|---:|
 | Random Forest | 0.8121 | 0.5827 | 0.8793 |
+| Bagged Trees | 0.8054 | 0.5619 | 0.8577 |
+| Gradient Boosting | 0.7919 | 0.5521 | 0.8633 |
+| RDA | 0.7987 | 0.5488 | 0.8557 |
 | KNN | 0.7852 | 0.5514 | 0.8727 |
 | SVM Radial | 0.7718 | 0.5314 | 0.8715 |
-| QDA | 0.7852 | 0.5315 | 0.8656 |
-| Gradient Boosting | 0.7919 | 0.5521 | 0.8633 |
 
-The full model comparison is available in [`output/model_performance.csv`](output/model_performance.csv).
+The full submitted model comparison is preserved in [`output/model_performance.csv`](output/model_performance.csv).
 
-Although Random Forest had the best aggregate metrics, the analysis also considered false-negative behavior. That distinction matters for a screening-oriented classification problem, where model selection should consider error costs rather than accuracy alone.
+Although Random Forest had the strongest overall metrics, the original analysis also considered KNN because of its false-negative behavior. For a screening-oriented problem, model selection should consider the cost of different error types rather than accuracy alone.
 
 ## Repository structure
 
 ```text
-.
+diabetes-prediction-r/
 ├── data/
-│   └── diabetes.csv
+│   ├── diabetes_part1.csv
+│   ├── diabetes_part2.csv
+│   ├── diabetes_part3.csv
+│   └── diabetes_part4.csv
 ├── src/
-│   └── final_analysis.Rmd
+│   ├── prepare_data.R
+│   └── final_analysis.R
 ├── output/
-│   ├── diabetes_prediction_poster.pdf
-│   ├── diabetes_prediction_poster.pptx
-│   ├── model_performance.csv
-│   └── poster_preview.png
+│   └── model_performance.csv
+├── .gitignore
 └── README.md
 ```
 
-`src/final_analysis.Rmd` is a cleaned version of the final R Markdown analysis used for the project. Scratch files, duplicate drafts, local RStudio state, and personal metadata were removed while retaining the modeling workflow used for the final deliverable.
+The dataset is stored in four source partitions. `src/prepare_data.R` combines them into the single `data/diabetes.csv` file expected by the analysis.
 
-## Running the analysis
+`src/final_analysis.R` is a cleaned portfolio version of the final modeling workflow. Scratch code, duplicate drafts, local RStudio state, and personal metadata were removed while preserving the core analysis approach.
 
-The project was built in R with `caret` as the primary modeling framework. Core packages include:
+## Reproduce the analysis
+
+Install the required packages in R:
 
 ```r
 install.packages(c(
-  "tidyverse", "caret", "mice", "DataExplorer", "pROC",
-  "themis", "VIM", "reshape2", "GGally", "klaR", "mda",
+  "tidyverse", "caret", "mice", "pROC", "klaR", "mda",
   "gbm", "randomForest", "kernlab", "RSNNS", "pls", "ipred"
 ))
 ```
 
-From RStudio, open `src/final_analysis.Rmd` and knit the document. The source expects the repository structure above and reads the dataset from `data/diabetes.csv`.
+From the `diabetes-prediction-r` directory, run:
+
+```bash
+Rscript src/prepare_data.R
+Rscript src/final_analysis.R
+```
+
+The first command reconstructs `data/diabetes.csv`. The second runs the cleaned modeling workflow and writes a fresh comparison to `output/model_performance_reproduced.csv`.
+
+Because this project was originally completed in an earlier R environment, reproduced metrics may vary slightly with package versions and tuning behavior. `output/model_performance.csv` contains the results from the submitted project.
 
 ## Notes
 
